@@ -1,5 +1,12 @@
 require 'rubygems'
+require 'em-synchrony'
+require 'em-synchrony/em-http'
 require './lib/em-ruby-irc'
+require './lib/rubybot/rubybot'
+require './lib/extensions'
+
+require './lib/rubybot/botsnack'
+require './lib/rubybot/weather'
 
 networks = [
 	{ 
@@ -7,10 +14,12 @@ networks = [
 		:port => 6667,
 		:nickname => "CadBotAlpha",
 		:realname => "See Cadwallion",
-		:username => "CadBotAlpha"
+		:username => "CadBotAlpha",
+		:channels => ["#coding"]
 	}
 ]
 
-EM.run {
-	EM.connect "deathknight.mmoirc.com", 6667, IRC::Connection
-}
+bot = Rubybot::Bot.new
+bot.plugin_system.add_plugin("botsnack", "Botsnack#give")
+bot.plugin_system.add_plugin("weather", "CadWeather#weather")
+bot.connect(networks)
