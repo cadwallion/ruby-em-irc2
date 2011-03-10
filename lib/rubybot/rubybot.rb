@@ -1,5 +1,5 @@
+require File.dirname(__FILE__) + '/plugin_system'
 
-require './lib/rubybot/plugin_system'
 module Rubybot
 	class Bot
 		attr_accessor :plugin_system, :connections
@@ -16,7 +16,7 @@ module Rubybot
 						:bot => self
 					}
 					config.merge!(connection)
-					EM.connect config[:server], config[:port], IRC::Connection, :config => config
+					EM.connect(config[:server], config[:port], IRC::Connection, :config => config)
 				end
 			end
 		end

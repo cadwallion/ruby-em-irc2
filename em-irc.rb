@@ -1,12 +1,13 @@
 require 'rubygems'
 require 'em-synchrony'
 require 'em-synchrony/em-http'
-require './lib/em-ruby-irc'
-require './lib/rubybot/rubybot'
-require './lib/extensions'
+require File.dirname(__FILE__) + '/lib/em-ruby-irc'
+require File.dirname(__FILE__) + '/lib/rubybot/rubybot'
+require File.dirname(__FILE__) + '/lib/extensions'
 
-require './lib/rubybot/botsnack'
-require './lib/rubybot/weather'
+require File.dirname(__FILE__) + '/lib/rubybot/botsnack'
+require File.dirname(__FILE__) + '/lib/rubybot/weather'
+require File.dirname(__FILE__) + '/lib/rubybot/eight_ball'
 
 networks = [
 	{ 
@@ -22,4 +23,6 @@ networks = [
 bot = Rubybot::Bot.new
 bot.plugin_system.add_plugin("botsnack", "Botsnack#give")
 bot.plugin_system.add_plugin("weather", "CadWeather#weather")
+bot.plugin_system.add_plugin("8ball", "EightBall#answer")
 bot.connect(networks)
+Process.daemon()

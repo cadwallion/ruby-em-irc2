@@ -9,13 +9,40 @@ class CadWeather
 			'par' => WEATHER_PAR,
 			'key' => WEATHER_API
 	}
+
 	def self.weather(params, event)
 		case params[1]
 		when "forecast"
 			self.get_forecast(params[2], event)
 		when "report"
 			self.get_current(params[2], event)
+		when "search"
+			self.search(params[2], event)
+		when "map"
+			self.map_link(params[2], event)
 		end
+	end
+	
+	def self.search(code, event)
+		locations = []
+		EM.synchrony do
+			http = EventMachine::HttpRequest.new("http://xoap.weather.com/search/search").get :query => { 'where' => code }
+			http.callback {
+				weather = Nokogiri::XML(http.response).root
+				if weather.xpath('/search/loc')
+					weather.xpath('/search/loc').each do |location|
+						locations << "#{location.text} (#{location['id']})"
+					end
+					event.connection.send_message(Rubybot::PluginSystem.get_target(event), locations.join(", "))
+				else
+					event.connection.send_message(Rubybot::PluginSystem.get_target(event), "City not found")
+				end
+			}
+		end
+	end
+
+	def self.map_link(code, event)
+		event.connection.send_message(Rubybot::PluginSystem.get_target(event), "http://www.weather.com/weather/map/interactive/#{code}")
 	end
 
 	def self.get_current(code, event)

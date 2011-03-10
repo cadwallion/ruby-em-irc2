@@ -1,5 +1,5 @@
 require 'eventmachine'
-require './lib/irc/connection_helpers'
+require File.dirname(__FILE__) + '/connection_helpers'
 module IRC
 	class Connection < EventMachine::Connection
 		attr_reader :realname, :username, :name, :logger, :command_char
@@ -56,6 +56,13 @@ module IRC
 				@logger.info("response: #{resp}")
 				send_to_server resp unless resp.empty?
 			}
+		end
+
+		def unbind
+			@logger.info("Connection lost, sleeping 5 seconds")
+			sleep 5
+			@logger.info("Reconnection to: #{config[:server]} Port: #{config[:port]}")
+			EventMachine::reconnect config[:server], config[:port], self
 		end
 
 		def run_startup_handlers
